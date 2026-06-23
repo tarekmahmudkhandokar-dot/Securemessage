@@ -1,0 +1,87 @@
+:root {
+    --glass-background: rgba(255, 255, 255, 0.08);
+    --glass-border: rgba(255, 255, 255, 0.12);
+    --accent-color: #0088cc;
+    --text-primary: #ffffff;
+}
+
+body, html {
+    margin: 0; padding: 0;
+    width: 100%; height: 100%;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto;
+    background: linear-gradient(145deg, #0f172a, #1e1e2f);
+    color: var(--text-primary);
+    overflow: hidden;
+}
+
+.screen {
+    width: 100%; height: 100%;
+    display: flex; flex-direction: column;
+}
+
+.hidden { display: none !important; }
+
+.glass {
+    background: var(--glass-background);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--glass-border);
+}
+
+.top-bar {
+    padding: 15px; display: flex; justify-content: space-between; align-items: center;
+}
+
+#view-port {
+    flex: 1; overflow-y: auto; padding-bottom: 70px;
+}
+
+.bottom-nav {
+    position: fixed; bottom: 0; width: 100%; height: 65px;
+    display: flex; justify-content: space-around; align-items: center;
+}
+
+.nav-btn {
+    display: flex; flex-direction: column; align-items: center; opacity: 0.5; cursor: pointer;
+}
+
+.nav-btn.active { opacity: 1; color: var(--accent-color); }
+
+.chat-row {
+    display: flex; padding: 12px; margin: 8px; border-radius: 12px; cursor: pointer;
+}
+
+.avatar-mock {
+    width: 45px; height: 45px; border-radius: 50%; background: #475569; margin-right: 12px;
+}
+
+.window-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: #0f172a; display: flex; flex-direction: column; z-index: 100;
+}
+
+#message-flow-area {
+    flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column;
+}
+
+.bubble {
+    max-width: 75%; padding: 10px; margin: 6px 0; border-radius: 14px; position: relative;
+}
+
+.bubble.outgoing { background: var(--accent-color); align-self: flex-end; }
+.bubble.incoming { background: rgba(255,255,255,0.15); align-self: flex-start; }
+
+.chat-input-dock {
+    padding: 12px; display: flex; align-items: center; gap: 10px;
+}
+
+.chat-input-dock input {
+    flex: 1; background: transparent; border: none; color: white; padding: 8px; outline: none;
+}
+
+.btn {
+    background: var(--accent-color); border: none; color: white;
+    padding: 10px 20px; border-radius: 8px; cursor: pointer; margin-top: 10px;
+}
+
+.material-icons-round { cursor: pointer; font-size: 24px; }
