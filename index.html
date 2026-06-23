@@ -10,94 +10,164 @@
 </head>
 <body>
 
+    <div id="lock-screen" class="screen hidden">
+        <div class="lock-container glass">
+            <span class="material-icons-round size-lg">lock</span>
+            <h3>Private Messenger Locked</h3>
+            <input type="password" id="passcode-input" placeholder="Enter 4-Digit PIN" maxlength="4">
+            <button id="unlock-btn" class="btn">Unlock App</button>
+        </div>
+    </div>
+
     <div id="auth-screen" class="screen active">
         <div class="auth-container glass">
-            <h2>Welcome to Private Messenger</h2>
-            <p>Enter your phone number to continue</p>
-            <div class="input-group">
-                <input type="tel" id="phone-input" placeholder="+880 1XXX XXXXXX">
+            <h2>Private Messenger</h2>
+            <div id="phone-step">
+                <input type="tel" id="phone-number" placeholder="+880 1XXXXXXXXX">
+                <button onclick="AuthModule.sendOTP()" class="btn">Get OTP</button>
             </div>
-            <button id="send-otp-btn" class="btn">Send OTP</button>
-            
-            <div id="otp-section" class="hidden">
-                <input type="text" id="otp-input" placeholder="Enter 6-digit OTP">
-                <button id="verify-btn" class="btn">Verify & Login</button>
+            <div id="otp-step" class="hidden">
+                <input type="text" id="otp-code" placeholder="Enter 6-Digit OTP (123456)">
+                <input type="text" id="user-name-input" placeholder="Your Full Name">
+                <input type="text" id="username-input" placeholder="Username (e.g., john_doe)">
+                <button onclick="AuthModule.verifyOTP()" class="btn">Register & Login</button>
             </div>
         </div>
     </div>
 
     <div id="app-screen" class="screen">
-        <header class="top-bar">
-            <div class="header-title">Private Messenger</div>
-            <div class="header-icons">
-                <span class="material-icons-round" id="search-icon">search</span>
-                <span class="material-icons-round" id="more-icon">more_vert</span>
+        <header class="top-bar glass">
+            <div class="brand" id="app-title">Private Chat</div>
+            <div class="actions">
+                <span class="material-icons-round" onclick="AppEngine.toggleSearch()">search</span>
+                <span class="material-icons-round" id="global-status-icon">cloud_done</span>
             </div>
         </header>
 
-        <main id="main-content">
-            <section id="tab-chats" class="tab-content active">
-                <div class="chat-list" id="chat-list-container">
-                    </div>
-                <button class="fab" id="new-chat-fab">
+        <div id="search-bar-container" class="hidden glass">
+            <input type="text" id="global-search" placeholder="Search messages or contacts..." oninput="AppEngine.performSearch()">
+        </div>
+
+        <main id="view-port">
+            
+            <div id="tab-chats" class="tab-view active">
+                <div id="chats-list"></div>
+                <button class="fab" onclick="ChatModule.openNewChatPrompt()">
                     <span class="material-icons-round">message</span>
                 </button>
-            </section>
+            </div>
+            
+            <div id="tab-calls" class="tab-view hidden">
+                <div id="calls-list"></div>
+            </div>
 
-            <section id="chat-window" class="hidden">
-                <div class="chat-header">
-                    <span class="material-icons-round" id="back-to-list">arrow_back</span>
-                    <div class="user-info">
-                        <div class="avatar" id="chat-avatar"></div>
-                        <div>
-                            <div class="user-name" id="chat-user-name">John Doe</div>
-                            <div class="user-status" id="chat-user-status">online</div>
-                        </div>
+            <div id="tab-media" class="tab-view hidden">
+                <div class="media-tabs">
+                    <span onclick="StorageModule.filterMedia('image')">Photos</span>
+                    <span onclick="StorageModule.filterMedia('video')">Videos</span>
+                    <span onclick="StorageModule.filterMedia('file')">Files</span>
+                    <span onclick="StorageModule.filterMedia('voice')">Voice</span>
+                </div>
+                <div id="media-grid"></div>
+            </div>
+
+            <div id="tab-settings" class="tab-view hidden">
+                <div class="profile-preview-card glass">
+                    <div id="settings-banner" class="banner-bg"></div>
+                    <div id="settings-avatar" class="avatar-lg"></div>
+                    <h3 id="settings-name">Loading...</h3>
+                    <p id="settings-username">@username</p>
+                    <p id="settings-bio">No bio added yet.</p>
+                </div>
+                <div class="setting-item glass">
+                    <h4>Appearance & Themes</h4>
+                    <button onclick="AppEngine.changeTheme('dark')" class="btn-sub">Dark Mode</button>
+                    <button onclick="AppEngine.changeTheme('light')" class="btn-sub">Light Mode</button>
+                    <button onclick="AppEngine.changeTheme('amoled')" class="btn-sub">AMOLED Black</button>
+                    <div class="accent-pickers">
+                        <span class="dot blue" onclick="SettingsModule.applyAccentColor('blue')"></span>
+                        <span class="dot green" onclick="SettingsModule.applyAccentColor('green')"></span>
+                        <span class="dot purple" onclick="SettingsModule.applyAccentColor('purple')"></span>
+                        <span class="dot red" onclick="SettingsModule.applyAccentColor('red')"></span>
                     </div>
-                    <div class="chat-actions">
-                        <span class="material-icons-round" id="call-voice-btn">call</span>
-                        <span class="material-icons-round" id="call-video-btn">videocam</span>
+                </div>
+                <div class="setting-item glass">
+                    <h4>Account & Privacy</h4>
+                    <button onclick="ProfileModule.triggerProfileEdit()" class="btn-sub">Edit Profile Info</button>
+                    <button onclick="AuthModule.setupPasscode()" class="btn-sub">Set App Passcode PIN</button>
+                </div>
+                <div class="setting-item glass">
+                    <h4>Storage & Cloud Backup</h4>
+                    <p>Local Cache: <span id="cache-size-display">0.00 MB</span></p>
+                    <button onclick="StorageEngine.clearAppCache()" class="btn-sub btn-danger">Clear Cache</button>
+                    <button onclick="BackupModule.triggerManualBackup()" class="btn-sub">Backup to Google Drive</button>
+                </div>
+            </div>
+
+            <div id="chat-window" class="window-overlay hidden">
+                <div class="chat-header glass">
+                    <span class="material-icons-round" onclick="ChatModule.closeChatWindow()">arrow_back</span>
+                    <div class="chat-meta">
+                        <span id="active-user-title">...</span>
+                        <span id="active-user-status">offline</span>
+                    </div>
+                    <div class="chat-calls-action">
+                        <span class="material-icons-round" onclick="ChatModule.toggleSecretMode()">lock_open</span>
+                        <span class="material-icons-round" onclick="CallModule.initiateCall('voice')">call</span>
+                        <span class="material-icons-round" onclick="CallModule.initiateCall('video')">videocam</span>
                     </div>
                 </div>
                 
-                <div class="message-area" id="message-container">
-                    </div>
-
-                <div class="input-area">
-                    <span class="material-icons-round">sentiment_satisfied</span>
-                    <input type="text" id="msg-input" placeholder="Message">
-                    <span class="material-icons-round" id="attach-btn">attach_file</span>
-                    <button id="send-msg-btn">
-                        <span class="material-icons-round">send</span>
-                    </button>
+                <div id="secret-banner" class="hidden">🔒 End-to-End Encrypted Secret Chat Enabled</div>
+                <div id="message-flow-area"></div>
+                
+                <div class="chat-input-dock glass">
+                    <span class="material-icons-round" onclick="EmojiModule.toggleEmojiPanel()">sentiment_satisfied</span>
+                    <input type="text" id="input-msg-field" placeholder="Write encrypted message...">
+                    <span class="material-icons-round" onclick="StorageModule.triggerAttachment()">attach_file</span>
+                    <span class="material-icons-round" id="voice-record-btn" onclick="VoiceModule.toggleRecord()">mic</span>
+                    <button id="submit-msg-btn" onclick="ChatModule.dispatchMessage()">Send</button>
                 </div>
-            </section>
+                
+                <div id="emoji-drawer" class="hidden glass">
+                    <div class="drawer-tabs">
+                        <span onclick="EmojiModule.loadEmojis()">Emojis</span>
+                        <span onclick="EmojiModule.loadStickers()">Stickers</span>
+                        <span onclick="EmojiModule.loadGIFsPrompt()">GIFs</span>
+                    </div>
+                    <div id="drawer-render-space"></div>
+                </div>
+            </div>
         </main>
 
-        <nav class="bottom-nav">
-            <div class="nav-item active" data-tab="chats">
-                <span class="material-icons-round">chat</span>
-                <span>Chats</span>
+        <nav class="bottom-nav glass">
+            <div class="nav-btn active" onclick="AppEngine.switchView('chats', this)">
+                <span class="material-icons-round">chat</span><span>Chats</span>
             </div>
-            <div class="nav-item" data-tab="calls">
-                <span class="material-icons-round">phone</span>
-                <span>Calls</span>
+            <div class="nav-btn" onclick="AppEngine.switchView('calls', this)">
+                <span class="material-icons-round">phone</span><span>Calls</span>
             </div>
-            <div class="nav-item" data-tab="media">
-                <span class="material-icons-round">perm_media</span>
-                <span>Media</span>
+            <div class="nav-btn" onclick="AppEngine.switchView('media', this)">
+                <span class="material-icons-round">perm_media</span><span>Media</span>
             </div>
-            <div class="nav-item" data-tab="settings">
-                <span class="material-icons-round">settings</span>
-                <span>Settings</span>
+            <div class="nav-btn" onclick="AppEngine.switchView('settings', this)">
+                <span class="material-icons-round">settings</span><span>Settings</span>
             </div>
         </nav>
     </div>
 
     <script src="db/indexeddb.js"></script>
+    <script src="js/crypto.js"></script>
     <script src="js/storage.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/chat.js"></script>
+    <script src="js/emoji.js"></script>
+    <script src="js/voice.js"></script>
+    <script src="js/video.js"></script>
+    <script src="js/call.js"></script>
+    <script src="js/profile.js"></script>
+    <script src="js/settings.js"></script>
+    <script src="js/backup.js"></script>
     <script src="js/app.js"></script>
 </body>
 </html>
