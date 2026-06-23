@@ -28,6 +28,7 @@ function initDB() {
             }
             if (!database.objectStoreNames.contains('media')) {
                 database.createObjectStore('media', { keyPath: 'mediaId' });
+                database.createObjectStore('media').createIndex('type', 'type', { unique: false });
             }
             if (!database.objectStoreNames.contains('settings')) {
                 database.createObjectStore('settings', { keyPath: 'key' });
@@ -41,7 +42,7 @@ function initDB() {
 
 function writeData(storeName, data) {
     return new Promise((resolve, reject) => {
-        if (!db) return reject("DB not initialized");
+        if (!db) return reject("DB missing");
         let tx = db.transaction([storeName], "readwrite");
         let store = tx.objectStore(storeName);
         let req = store.put(data);
@@ -52,7 +53,7 @@ function writeData(storeName, data) {
 
 function readData(storeName, key) {
     return new Promise((resolve, reject) => {
-        if (!db) return reject("DB not initialized");
+        if (!db) return reject("DB missing");
         let tx = db.transaction([storeName], "readonly");
         let store = tx.objectStore(storeName);
         let req = store.get(key);
@@ -63,7 +64,7 @@ function readData(storeName, key) {
 
 function readAllData(storeName) {
     return new Promise((resolve, reject) => {
-        if (!db) return reject("DB not initialized");
+        if (!db) return reject("DB missing");
         let tx = db.transaction([storeName], "readonly");
         let store = tx.objectStore(storeName);
         let req = store.getAll();
@@ -74,7 +75,7 @@ function readAllData(storeName) {
 
 function deleteData(storeName, key) {
     return new Promise((resolve, reject) => {
-        if (!db) return reject("DB not initialized");
+        if (!db) return reject("DB missing");
         let tx = db.transaction([storeName], "readwrite");
         let store = tx.objectStore(storeName);
         let req = store.delete(key);
@@ -85,15 +86,15 @@ function deleteData(storeName, key) {
 
 function queryMessages(chatId) {
     return new Promise((resolve, reject) => {
-        if (!db) return reject("DB not initialized");
+        if (!db) return reject("DB missing");
         let tx = db.transaction(['messages'], "readonly");
         let store = tx.objectStore('messages');
         let index = store.index('chatId');
         let req = index.getAll(chatId);
         req.onsuccess = () => {
-            let sorted = req.result.sort((a,b) => a.timestamp - b.timestamp);
+            let sorted = req.result.sort((a, b) => a.timestamp - b.timestamp);
             resolve(sorted);
         };
         req.onerror = () => reject(req.error);
     });
-      }
+                               }
