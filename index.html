@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Private Chat Messenger</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dark.css" id="theme-link">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+</head>
+<body>
+
+    <div id="auth-screen" class="screen active">
+        <div class="auth-container glass">
+            <h2>Welcome to Private Messenger</h2>
+            <p>Enter your phone number to continue</p>
+            <div class="input-group">
+                <input type="tel" id="phone-input" placeholder="+880 1XXX XXXXXX">
+            </div>
+            <button id="send-otp-btn" class="btn">Send OTP</button>
+            
+            <div id="otp-section" class="hidden">
+                <input type="text" id="otp-input" placeholder="Enter 6-digit OTP">
+                <button id="verify-btn" class="btn">Verify & Login</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="app-screen" class="screen">
+        <header class="top-bar">
+            <div class="header-title">Private Messenger</div>
+            <div class="header-icons">
+                <span class="material-icons-round" id="search-icon">search</span>
+                <span class="material-icons-round" id="more-icon">more_vert</span>
+            </div>
+        </header>
+
+        <main id="main-content">
+            <section id="tab-chats" class="tab-content active">
+                <div class="chat-list" id="chat-list-container">
+                    </div>
+                <button class="fab" id="new-chat-fab">
+                    <span class="material-icons-round">message</span>
+                </button>
+            </section>
+
+            <section id="chat-window" class="hidden">
+                <div class="chat-header">
+                    <span class="material-icons-round" id="back-to-list">arrow_back</span>
+                    <div class="user-info">
+                        <div class="avatar" id="chat-avatar"></div>
+                        <div>
+                            <div class="user-name" id="chat-user-name">John Doe</div>
+                            <div class="user-status" id="chat-user-status">online</div>
+                        </div>
+                    </div>
+                    <div class="chat-actions">
+                        <span class="material-icons-round" id="call-voice-btn">call</span>
+                        <span class="material-icons-round" id="call-video-btn">videocam</span>
+                    </div>
+                </div>
+                
+                <div class="message-area" id="message-container">
+                    </div>
+
+                <div class="input-area">
+                    <span class="material-icons-round">sentiment_satisfied</span>
+                    <input type="text" id="msg-input" placeholder="Message">
+                    <span class="material-icons-round" id="attach-btn">attach_file</span>
+                    <button id="send-msg-btn">
+                        <span class="material-icons-round">send</span>
+                    </button>
+                </div>
+            </section>
+        </main>
+
+        <nav class="bottom-nav">
+            <div class="nav-item active" data-tab="chats">
+                <span class="material-icons-round">chat</span>
+                <span>Chats</span>
+            </div>
+            <div class="nav-item" data-tab="calls">
+                <span class="material-icons-round">phone</span>
+                <span>Calls</span>
+            </div>
+            <div class="nav-item" data-tab="media">
+                <span class="material-icons-round">perm_media</span>
+                <span>Media</span>
+            </div>
+            <div class="nav-item" data-tab="settings">
+                <span class="material-icons-round">settings</span>
+                <span>Settings</span>
+            </div>
+        </nav>
+    </div>
+
+    <script src="db/indexeddb.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/chat.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
