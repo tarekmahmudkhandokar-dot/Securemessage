@@ -5,160 +5,218 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Private Chat Messenger</title>
     <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/dark.css" id="theme-link">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <link id="theme-link" rel="stylesheet" href="css/dark.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body>
-
-    <div id="lock-screen" class="screen hidden">
-        <div class="lock-container glass">
-            <span class="material-icons-round size-lg">lock</span>
-            <h3>Private Messenger Locked</h3>
-            <input type="password" id="passcode-input" placeholder="Enter 4-Digit PIN" maxlength="4">
-            <button id="unlock-btn" class="btn">Unlock App</button>
-        </div>
-    </div>
-
-    <div id="auth-screen" class="screen active">
-        <div class="auth-container glass">
-            <h2>Private Messenger</h2>
-            <div id="phone-step">
-                <input type="tel" id="phone-number" placeholder="+880 1XXXXXXXXX">
-                <button onclick="AuthModule.sendOTP()" class="btn">Get OTP</button>
-            </div>
-            <div id="otp-step" class="hidden">
-                <input type="text" id="otp-code" placeholder="Enter 6-Digit OTP (123456)">
-                <input type="text" id="user-name-input" placeholder="Your Full Name">
-                <input type="text" id="username-input" placeholder="Username (e.g., john_doe)">
-                <button onclick="AuthModule.verifyOTP()" class="btn">Register & Login</button>
+<body class="dark-mode">
+    <div id="passcode-screen" class="glass-overlay">
+        <div class="lock-box">
+            <h2><i class="fas fa-lock"></i> Enter Passcode</h2>
+            <input type="password" id="passcode-input" placeholder="Enter PIN/Passcode">
+            <button id="unlock-btn" class="btn">Unlock</button>
+            <div class="biometric-options">
+                <button id="fingerprint-btn"><i class="fas fa-fingerprint"></i></button>
+                <button id="face-btn"><i class="fas fa-user-shield"></i></button>
             </div>
         </div>
     </div>
 
-    <div id="app-screen" class="screen">
-        <header class="top-bar glass">
-            <div class="brand" id="app-title">Private Chat</div>
-            <div class="actions">
-                <span class="material-icons-round" onclick="AppEngine.toggleSearch()">search</span>
-                <span class="material-icons-round" id="global-status-icon">cloud_done</span>
+    <div id="auth-screen" class="glass-overlay hidden">
+        <div class="auth-box">
+            <h2>Private Chat Messenger</h2>
+            <div id="phone-auth-step">
+                <input type="text" id="auth-phone" placeholder="Phone Number (e.g., 01816640707)">
+                <input type="password" id="auth-pass" placeholder="Password">
+                <button id="send-otp-btn" class="btn">Verify & Login</button>
             </div>
-        </header>
-
-        <div id="search-bar-container" class="hidden glass">
-            <input type="text" id="global-search" placeholder="Search messages or contacts..." oninput="AppEngine.performSearch()">
+            <div id="otp-auth-step" class="hidden">
+                <p>Enter 6-Digit OTP (Simulated)</p>
+                <input type="text" id="auth-otp" placeholder="123456">
+                <button id="verify-otp-btn" class="btn">Confirm OTP</button>
+            </div>
+            <div id="profile-setup-step" class="hidden">
+                <input type="text" id="setup-name" placeholder="Full Name">
+                <input type="text" id="setup-username" placeholder="Username">
+                <textarea id="setup-bio" placeholder="Bio"></textarea>
+                <button id="complete-setup-btn" class="btn">Start Messaging</button>
+            </div>
         </div>
+    </div>
 
-        <main id="view-port">
-            
-            <div id="tab-chats" class="tab-view active">
-                <div id="chats-list"></div>
-                <button class="fab" onclick="ChatModule.openNewChatPrompt()">
-                    <span class="material-icons-round">message</span>
-                </button>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="app-branding">
+                    <i class="fas fa-user-secret"></i> <span>Private Messenger</span>
+                </div>
+                <div class="sidebar-actions">
+                    <button id="new-chat-btn" title="New Chat"><i class="fas fa-plus"></i></button>
+                    <button id="archive-view-btn" title="Archive"><i class="fas fa-archive"></i></button>
+                </div>
             </div>
             
-            <div id="tab-calls" class="tab-view hidden">
-                <div id="calls-list"></div>
+            <div class="search-bar-container">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" id="global-search" placeholder="Search Everything...">
             </div>
 
-            <div id="tab-media" class="tab-view hidden">
-                <div class="media-tabs">
-                    <span onclick="StorageModule.filterMedia('image')">Photos</span>
-                    <span onclick="StorageModule.filterMedia('video')">Videos</span>
-                    <span onclick="StorageModule.filterMedia('file')">Files</span>
-                    <span onclick="StorageModule.filterMedia('voice')">Voice</span>
+            <div class="content-tab-viewport">
+                <div id="tab-chats-content" class="tab-pane active">
+                    <div class="pinned-section-header">Pinned Chats</div>
+                    <div id="pinned-chats-list"></div>
+                    <div class="all-chats-section-header">All Messages</div>
+                    <div id="chats-list"></div>
                 </div>
-                <div id="media-grid"></div>
+                <div id="tab-calls-content" class="tab-pane hidden">
+                    <div id="calls-history-list"></div>
+                </div>
+                <div id="tab-media-content" class="tab-pane hidden">
+                    <div class="gallery-subtabs">
+                        <button class="g-subtab active" data-type="photo">Photos</button>
+                        <button class="g-subtab" data-type="video">Videos</button>
+                        <button class="g-subtab" data-type="file">Files</button>
+                        <button class="g-subtab" data-type="link">Links</button>
+                        <button class="g-subtab" data-type="voice">Voice</button>
+                    </div>
+                    <div id="gallery-grid" class="gallery-grid"></div>
+                </div>
+                <div id="tab-settings-content" class="tab-pane hidden">
+                    <div class="settings-container">
+                        <div class="settings-profile-card">
+                            <div class="banner-preview" id="settings-banner"></div>
+                            <img src="https://via.placeholder.com/80" id="settings-avatar" alt="Avatar">
+                            <h3 id="profile-display-name">Loading...</h3>
+                            <p id="profile-display-username">@loading</p>
+                        </div>
+                        
+                        <div class="setting-group">
+                            <h4>Account</h4>
+                            <input type="text" id="edit-name" placeholder="Change Name">
+                            <input type="text" id="edit-username" placeholder="Change Username">
+                            <input type="text" id="edit-bio" placeholder="Change Bio">
+                            <button id="save-account-btn" class="btn-sm">Update Account</button>
+                        </div>
+
+                        <div class="setting-group">
+                            <h4>Appearance</h4>
+                            <label>Theme: </label>
+                            <select id="theme-selector">
+                                <option value="dark">Dark Mode</option>
+                                <option value="light">Light Mode</option>
+                                <option value="amoled">AMOLED Black</option>
+                            </select>
+                            <br><br>
+                            <label>Accent Color: </label>
+                            <select id="accent-selector">
+                                <option value="blue">Blue</option>
+                                <option value="green">Green</option>
+                                <option value="purple">Purple</option>
+                                <option value="red">Red</option>
+                            </select>
+                            <br><br>
+                            <label>Font Size: </label>
+                            <input type="range" id="font-size-slider" min="12" max="20" value="15">
+                        </div>
+
+                        <div class="setting-group">
+                            <h4>Privacy</h4>
+                            <label><input type="checkbox" id="privacy-lastseen" checked> Share Last Seen</label><br>
+                            <label><input type="checkbox" id="privacy-photo" checked> Public Profile Photo</label><br>
+                            <label><input type="checkbox" id="privacy-receipts" checked> Send Read Receipts</label>
+                        </div>
+
+                        <div class="setting-group">
+                            <h4>Storage & Cache</h4>
+                            <p>Current Cache Size: <span id="cache-size-display">0 KB</span></p>
+                            <button id="clear-cache-btn" class="btn-sm alert">Clear Cache</button>
+                        </div>
+
+                        <div class="setting-group">
+                            <h4>Cloud Backup</h4>
+                            <button id="manual-backup-btn" class="btn-sm secure"><i class="fab fa-google-drive"></i> Backup to Google Drive</button>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <div id="tab-settings" class="tab-view hidden">
-                <div class="profile-preview-card glass">
-                    <div id="settings-banner" class="banner-bg"></div>
-                    <div id="settings-avatar" class="avatar-lg"></div>
-                    <h3 id="settings-name">Loading...</h3>
-                    <p id="settings-username">@username</p>
-                    <p id="settings-bio">No bio added yet.</p>
-                </div>
-                <div class="setting-item glass">
-                    <h4>Appearance & Themes</h4>
-                    <button onclick="AppEngine.changeTheme('dark')" class="btn-sub">Dark Mode</button>
-                    <button onclick="AppEngine.changeTheme('light')" class="btn-sub">Light Mode</button>
-                    <button onclick="AppEngine.changeTheme('amoled')" class="btn-sub">AMOLED Black</button>
-                    <div class="accent-pickers">
-                        <span class="dot blue" onclick="SettingsModule.applyAccentColor('blue')"></span>
-                        <span class="dot green" onclick="SettingsModule.applyAccentColor('green')"></span>
-                        <span class="dot purple" onclick="SettingsModule.applyAccentColor('purple')"></span>
-                        <span class="dot red" onclick="SettingsModule.applyAccentColor('red')"></span>
-                    </div>
-                </div>
-                <div class="setting-item glass">
-                    <h4>Account & Privacy</h4>
-                    <button onclick="ProfileModule.triggerProfileEdit()" class="btn-sub">Edit Profile Info</button>
-                    <button onclick="AuthModule.setupPasscode()" class="btn-sub">Set App Passcode PIN</button>
-                </div>
-                <div class="setting-item glass">
-                    <h4>Storage & Cloud Backup</h4>
-                    <p>Local Cache: <span id="cache-size-display">0.00 MB</span></p>
-                    <button onclick="StorageEngine.clearAppCache()" class="btn-sub btn-danger">Clear Cache</button>
-                    <button onclick="BackupModule.triggerManualBackup()" class="btn-sub">Backup to Google Drive</button>
-                </div>
+            <nav class="bottom-nav">
+                <button class="nav-item active" data-tab="chats"><i class="fas fa-comment"></i><span>Chats</span></button>
+                <button class="nav-item" data-tab="calls"><i class="fas fa-phone"></i><span>Calls</span></button>
+                <button class="nav-item" data-tab="media"><i class="fas fa-photo-film"></i><span>Media</span></button>
+                <button class="nav-item" data-tab="settings"><i class="fas fa-cog"></i><span>Settings</span></button>
+            </nav>
+        </aside>
+
+        <main class="chat-area empty" id="chat-viewport">
+            <div class="no-chat-selected">
+                <i class="fas fa-comments-blur"></i>
+                <p>Select a conversation to begin end-to-end encrypted messaging.</p>
             </div>
 
-            <div id="chat-window" class="window-overlay hidden">
-                <div class="chat-header glass">
-                    <span class="material-icons-round" onclick="ChatModule.closeChatWindow()">arrow_back</span>
-                    <div class="chat-meta">
-                        <span id="active-user-title">...</span>
-                        <span id="active-user-status">offline</span>
+            <div class="active-chat-wrapper hidden">
+                <header class="chat-header">
+                    <div class="chat-header-user">
+                        <img src="https://via.placeholder.com/40" id="active-chat-avatar" alt="User">
+                        <div class="chat-user-meta">
+                            <h3 id="active-chat-title">Receiver</h3>
+                            <p id="active-chat-status">Offline</p>
+                        </div>
                     </div>
-                    <div class="chat-calls-action">
-                        <span class="material-icons-round" onclick="ChatModule.toggleSecretMode()">lock_open</span>
-                        <span class="material-icons-round" onclick="CallModule.initiateCall('voice')">call</span>
-                        <span class="material-icons-round" onclick="CallModule.initiateCall('video')">videocam</span>
+                    <div class="chat-header-actions">
+                        <button id="call-voice-btn"><i class="fas fa-phone"></i></button>
+                        <button id="call-video-btn"><i class="fas fa-video"></i></button>
+                        <button id="secret-chat-toggle"><i class="fas fa-user-shield"></i></button>
+                        <button id="active-menu-btn"><i class="fas fa-ellipsis-v"></i></button>
+                        
+                        <div id="header-dropdown" class="dropdown-menu hidden">
+                            <button id="dropdown-pin-chat">Pin Chat</button>
+                            <button id="dropdown-archive-chat">Archive Chat</button>
+                            <button id="dropdown-export-chat">Export Chat</button>
+                        </div>
                     </div>
-                </div>
-                
-                <div id="secret-banner" class="hidden">🔒 End-to-End Encrypted Secret Chat Enabled</div>
-                <div id="message-flow-area"></div>
-                
-                <div class="chat-input-dock glass">
-                    <span class="material-icons-round" onclick="EmojiModule.toggleEmojiPanel()">sentiment_satisfied</span>
-                    <input type="text" id="input-msg-field" placeholder="Write encrypted message...">
-                    <span class="material-icons-round" onclick="StorageModule.triggerAttachment()">attach_file</span>
-                    <span class="material-icons-round" id="voice-record-btn" onclick="VoiceModule.toggleRecord()">mic</span>
-                    <button id="submit-msg-btn" onclick="ChatModule.dispatchMessage()">Send</button>
-                </div>
-                
-                <div id="emoji-drawer" class="hidden glass">
-                    <div class="drawer-tabs">
-                        <span onclick="EmojiModule.loadEmojis()">Emojis</span>
-                        <span onclick="EmojiModule.loadStickers()">Stickers</span>
-                        <span onclick="EmojiModule.loadGIFsPrompt()">GIFs</span>
+                </header>
+
+                <div class="messages-scroll-area" id="messages-display-container"></div>
+
+                <footer class="chat-footer-input-panel">
+                    <div class="input-controls-row">
+                        <button id="emoji-panel-toggle" class="footer-icon-btn"><i class="far fa-smile"></i></button>
+                        <button id="attachment-toggle" class="footer-icon-btn"><i class="fas fa-paperclip"></i></button>
+                        <div class="input-field-wrapper">
+                            <input type="text" id="chat-message-input" placeholder="Write an encrypted message...">
+                        </div>
+                        <button id="message-submit-btn" class="footer-icon-btn main-send-btn"><i class="fas fa-paper-plane"></i></button>
                     </div>
-                    <div id="drawer-render-space"></div>
-                </div>
+
+                    <div id="emoji-picker-panel" class="emoji-picker-container hidden">
+                        <div class="emoji-tabs-header">
+                            <button class="emoji-tab-btn active" data-cat="emojis">Emojis</button>
+                        </div>
+                        <div id="emoji-picker-content" class="emoji-grid-content"></div>
+                    </div>
+                </footer>
             </div>
         </main>
+    </div>
 
-        <nav class="bottom-nav glass">
-            <div class="nav-btn active" onclick="AppEngine.switchView('chats', this)">
-                <span class="material-icons-round">chat</span><span>Chats</span>
+    <div id="webrtc-call-modal" class="call-overlay hidden">
+        <div class="call-window-card">
+            <img src="https://via.placeholder.com/100" id="call-screen-avatar" alt="User">
+            <h2 id="call-screen-name">User</h2>
+            <p id="call-status-string">Secure connection initialization...</p>
+            <div class="call-controls-row">
+                <button id="call-disconnect-btn" class="call-action-btn hangup"><i class="fas fa-phone-slash"></i></button>
             </div>
-            <div class="nav-btn" onclick="AppEngine.switchView('calls', this)">
-                <span class="material-icons-round">phone</span><span>Calls</span>
-            </div>
-            <div class="nav-btn" onclick="AppEngine.switchView('media', this)">
-                <span class="material-icons-round">perm_media</span><span>Media</span>
-            </div>
-            <div class="nav-btn" onclick="AppEngine.switchView('settings', this)">
-                <span class="material-icons-round">settings</span><span>Settings</span>
-            </div>
-        </nav>
+        </div>
+    </div>
+
+    <div id="message-context-menu" class="msg-context-menu hidden">
+        <button id="ctx-delete-everyone"><i class="fas fa-trash-can"></i> Delete For Everyone</button>
     </div>
 
     <script src="db/indexeddb.js"></script>
-    <script src="js/crypto.js"></script>
     <script src="js/storage.js"></script>
+    <script src="js/crypto.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/chat.js"></script>
     <script src="js/emoji.js"></script>
@@ -170,4 +228,4 @@
     <script src="js/backup.js"></script>
     <script src="js/app.js"></script>
 </body>
-</html>
+    </html>
