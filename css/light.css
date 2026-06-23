@@ -1,0 +1,9 @@
+body.light-mode {
+    --bg-gradient: linear-gradient(135deg, #f1f5f9 0%, #cbd5e1 100%);
+    --glass-bg: rgba(0, 0, 0, 0.04);
+    --glass-border: rgba(0, 0, 0, 0.1);
+    --text-main: #0f172a;
+    --text-muted: #475569;
+    --bubble-sent: #1d4ed8;
+    --bubble-rcvd: rgba(0, 0, 0, 0.08);
+}
